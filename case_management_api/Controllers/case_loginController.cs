@@ -196,7 +196,7 @@ namespace case_management_api.Controllers
 
                 await _context.SaveChangesAsync();
 
-                return Ok(new { status = true, message = "Successfully logged in", data = new { emp_id = user.id, token = user.enc_key } });
+                return Ok(new { status = true, message = "Successfully logged in", data = new { emp_id = user.id, token = user.enc_key,account_id=user.account_id } });
             }
 
             return Ok(new { status = false, message = "Invalid credentials" });

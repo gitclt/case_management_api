@@ -306,8 +306,12 @@ namespace case_management_api.Controllers
                     result.date,
                     result.priority_id,
                     result.priority,
+                    //app 
+                    result.assembly_id,
+                    result.assembly,
                     result.category_id,
                     result.category,
+                    result.status,
 
                 }).ToList();
             }
@@ -547,7 +551,6 @@ namespace case_management_api.Controllers
 
         [HttpPut]
         [Route("update_status")]
-
         public async Task<IActionResult> update_status([FromForm] int? id, [FromForm] string? status, [FromForm] string? remark, [FromForm] DateTime? reminder_date, [FromForm] IFormFile? document)
         {
             if (id == null)
@@ -593,6 +596,7 @@ namespace case_management_api.Controllers
                 remark = remark,
                 addedon = DateTime.Now,
                 file = fileName // Save the uploaded document's file name
+               
             };
             await _context.tbl_case_status.AddAsync(history);
             await _context.SaveChangesAsync();
