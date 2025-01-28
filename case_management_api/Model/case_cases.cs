@@ -48,5 +48,6 @@ namespace case_management_api.Model
         public int? account_id { get; set; } 
 
         public string? status { get; set; } 
+        public string? subject { get; set; } 
     }
 }

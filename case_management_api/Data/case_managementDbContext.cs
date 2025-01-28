@@ -58,6 +58,7 @@ namespace api_case_management.Data
         public DbSet<case_hierarchy> tbl_case_hierarchy { get; set; }
         public DbSet<case_role_privilage> tbl_case_role_privilage { get; set; }
         public DbSet<case_status> tbl_case_status { get; set; }
+        public DbSet<case_privilage> tbl_case_privilage { get; set; }
 
 
 

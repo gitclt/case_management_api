@@ -47,7 +47,7 @@ namespace case_management_api.Controllers
             return Ok(new { status = true, message = "Data added successfully" });
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("update_subadmin")]
         public async Task<ActionResult> update_subadmin([FromBody] case_login request)
         {
@@ -130,7 +130,7 @@ namespace case_management_api.Controllers
             }
 
             var query = _context.tbl_case_login
-                .Where(c => c.delete_status == 0 && (!id.HasValue || c.id == id.Value))
+                .Where(c => c.delete_status == 0 && (!id.HasValue || c.id == id.Value) && c.type == "subadmin")
                 .Select(c => new
                 {
                     id = c.id.ToString(),
@@ -143,7 +143,7 @@ namespace case_management_api.Controllers
                     assemblies = (
                         from a in _context.tbl_case_subadminassembly
                         join ca in _context.tbl_case_assembly on a.assembly_id equals ca.id
-                        where a.subadmin_id == c.id
+                        where a.subadmin_id == c.id 
                         select new
                         {
                             assembly_id = ca.id.ToString(),

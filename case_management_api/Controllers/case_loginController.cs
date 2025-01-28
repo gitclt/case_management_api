@@ -115,13 +115,22 @@ namespace case_management_api.Controllers
                 // Step 5: Handle login based on type (employee or customer)
                 if (type == "admin")
                 {
-                    return Ok(new { status = true, message = "Login successful", data = users.First().enc_key });
+                    return Ok(new { status = true, message = "success",
+                        data = 
+    
+        new
+        {
+            enc_key = users.First().enc_key,
+            account_id = users.First().account_id
+        }
+    
+                    });
                 }
 
 
                 else if (type == "subadmin")
                 {
-                    return Ok(new { status = true, message = "login successfully", data = users.First().enc_key });
+                    return Ok(new { status = true, message = "success", data = users.First().enc_key, users.First().account_id });
                 }
                 else
                 {

@@ -40,7 +40,7 @@ namespace case_management_api.Controllers
             return Ok(new { status = true, message = "Data added successfully" });
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("update_category")]
         public async Task<ActionResult> update_category([FromBody] case_category request)
         {

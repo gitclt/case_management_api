@@ -41,7 +41,7 @@ namespace case_management_api.Controllers
             return Ok(new { status = true, message = "Data added successfully" });
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("update_priority")]
         public async Task<ActionResult> update_priority([FromBody] case_priority request)
         {
