@@ -37,10 +37,10 @@ namespace case_management_api.Controllers
                         select new
                         {
                             c.id,
-c.module,
-c.menu,
-c.hierarchy_id,
-c.platform,
+                            c.module,
+                            c.menu,
+                            c.hierarchy_id,
+                            c.platform,
 
                             c.account_id
 

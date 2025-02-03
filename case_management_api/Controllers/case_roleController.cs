@@ -124,16 +124,18 @@ namespace case_management_api.Controllers
             }
 
             var query = from c in roleQuery
-                        join h in _context.tbl_case_hierarchy on c.hierarchy_id equals h.id
-                       
-                        where c.delete_status == 0 && h.delete_status == 0
+                        join h in _context.tbl_case_hierarchy on c.hierarchy_id equals h.id into hi
+
+                        from pr in hi.DefaultIfEmpty()
+                        where (c == null || c.delete_status == 0) && (pr==null|| pr.delete_status == 0)
+
                         select new
                         {
                             c.id,
-                           c.name,
-                           c.hierarchy_id,
-                          c.account_id,
-                            hierarchy = h.name,
+                            c.name,
+                            c.hierarchy_id,
+                            c.account_id,
+                            hierarchy = pr.name,
 
                         };
 

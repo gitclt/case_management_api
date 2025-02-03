@@ -15,98 +15,74 @@ namespace case_management_api.Controllers
         {
             _context = context;
         }
+        //(todays and upcoming activities)
         [HttpGet]
-        [Route("case_todays_activity")]
-        public async Task<ActionResult> case_todays_activity()
-        {
-            var curdate = DateTime.Now.Date;
-           // var startOfWeek = curdate.AddDays(-7);
-            //return Ok(startOfWeek);
-            var supportrequest = _context.tbl_case_cases.Where(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.date==curdate).Count();
-            var supportrequest_reminders = _context.tbl_case_cases
-    .Where(tbl => tbl.type == "support request"
-                  && tbl.delete_status == 0
-                  && tbl.date == curdate
-                  && tbl.reminder_date == curdate)
-    .Count();
-
-            var program_schedule = _context.tbl_case_cases.Where(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.date == curdate).Count();
-            var programschedule_reminders = _context.tbl_case_cases
-  .Where(tbl => tbl.type == "program schedule"
-                && tbl.delete_status == 0
-                && tbl.date == curdate
-                && tbl.reminder_date == curdate)
-  .Count();
-            var wedding_reminder = _context.tbl_case_cases.Where(tbl => tbl.type == "wedding reminder" && tbl.delete_status == 0 && tbl.date == curdate).Count();
-            var weddingreminders = _context.tbl_case_cases
-.Where(tbl => tbl.type == "wedding reminder"
-             && tbl.delete_status == 0
-             && tbl.date == curdate
-             && tbl.reminder_date == curdate)
-.Count();
-
-            return Ok(new
-            {
-                status = true,
-                data = new[]
-        {
-            new
-            {
-                supportrequest = supportrequest,
-                supportReminders = supportrequest_reminders,
-                programschedule_reminders=programschedule_reminders,
-
-                program_schedule = program_schedule,
-                wedding_reminder =wedding_reminder ,
-                weddingreminders=weddingreminders,
-
-            }
-        }
-            });
-
-
-
-
-        }
-
-
-        [HttpGet]
-        [Route("case_upcoming_activities")]
-        public async Task<ActionResult> case_upcoming_activities()
+        [Route("case_activities")]
+        public async Task<ActionResult> case_activities(string type)
         {
             var curdate = DateTime.Now.Date;
             var startOfWeek = curdate.AddDays(7);
-           // return Ok(startOfWeek);
-            var supportrequest = _context.tbl_case_cases.Where(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.reminder_date >= curdate
-                  && tbl.reminder_date <= startOfWeek).Count();
-            var program_schedule = _context.tbl_case_cases.Where(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.reminder_date >= curdate
-                  && tbl.reminder_date <= startOfWeek).Count();
-            var wedding_reminder = _context.tbl_case_cases.Where(tbl => tbl.type == "wedding reminder" && tbl.delete_status == 0 && tbl.reminder_date >= curdate
-                  && tbl.reminder_date <= startOfWeek).Count();
-            var death = _context.tbl_case_cases.Where(tbl => tbl.type == "death" && tbl.delete_status == 0 && tbl.date == startOfWeek).Count();
 
-
-            return Ok(new
+            if (type == "today")
             {
-                status = true,
-                data = new[]
-        {
-            new
-            {
-                supportrequest = supportrequest,
-                program_schedule = program_schedule,
-                wedding_reminder =wedding_reminder ,
+                var supportrequest = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.date == curdate);
+                var supportrequest_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.date == curdate && tbl.reminder_date == curdate);
 
+                var program_schedule = _context.tbl_case_cases.Count(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.date == curdate);
+                var programschedule_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.date == curdate && tbl.reminder_date == curdate);
+
+                var wedding_reminder = _context.tbl_case_cases.Count(tbl => tbl.type == "wedding reminder" && tbl.delete_status == 0 && tbl.date == curdate);
+                var weddingreminders = _context.tbl_case_cases.Count(tbl => tbl.type == "wedding reminder" && tbl.delete_status == 0 && tbl.date == curdate && tbl.reminder_date == curdate);
+
+                return Ok(new
+                {
+                    status = true,
+                    data = new[]
+                    {
+                new
+                {
+                    supportrequest,
+                    supportReminders = supportrequest_reminders,
+                    programschedule_reminders,
+                    program_schedule,
+                    wedding_reminder,
+                    weddingreminders
+                }
+            }
+                });
+            }
+            else if (type == "upcoming")
+            {
+               // var supportrequest = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.date == startOfWeek);
+
+                var program_schedule = _context.tbl_case_cases.Count(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.date >= curdate && tbl.date <= startOfWeek);
+                var program_schedule_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.reminder_date >= curdate && tbl.reminder_date <= startOfWeek);
+                var wedding = _context.tbl_case_cases.Count(tbl => tbl.type == "wedding reminder" && tbl.delete_status == 0 && tbl.date >= curdate && tbl.date <= startOfWeek);
+
+                var wedding_reminder = _context.tbl_case_cases.Count(tbl => tbl.type == "wedding reminder" && tbl.delete_status == 0 && tbl.reminder_date >= curdate && tbl.reminder_date <= startOfWeek);
+
+                return Ok(new
+                {
+                    status = true,
+                    data = new[]
+                    {
+                new
+                {
+                    program_schedule,
+                    program_schedule_reminders,
+                    wedding,
+                    wedding_reminder
+                }
+            }
+                });
+            }
+            else
+            {
+                return BadRequest(new { status = false, message = "Invalid type. Use 'today' or 'upcoming'." });
             }
         }
-            });
 
-
-
-
-
-        }
-
+        //
         [HttpGet]
         [Route("view_upcoming_activities")]
         public async Task<IActionResult> view_upcoming_activities(int? id, string? type, string? period, int page = 1, int pageSize = 10)
@@ -139,10 +115,10 @@ namespace case_management_api.Controllers
                     case "today":
                         empqry = empqry.Where(c => c.date.HasValue && c.date.Value.Date == curdate);
                         break;
-                    case "thisweek":
+                    case "week":
                         empqry = empqry.Where(c => c.date.HasValue && c.date.Value.Date >= startOfWeek && c.date.Value.Date <= endOfWeek);
                         break;
-                    case "thismonth":
+                    case "month":
                         empqry = empqry.Where(c => c.date.HasValue && c.date.Value.Date >= startOfMonth && c.date.Value.Date <= endOfMonth);
                         break;
                     default:
@@ -330,10 +306,14 @@ namespace case_management_api.Controllers
 
             // Build the query
             var query = from c in empqry
-                        join s in _context.tbl_case_category on c.category_id equals s.id
-                        join d in _context.tbl_case_priority on c.priority_id equals d.id
-                        join p in _context.tbl_case_assembly on c.assembly_id equals p.id
-                        where s.delete_status == 0 && d.delete_status == 0
+                        join s in _context.tbl_case_category on c.category_id equals s.id into cat
+                        from sc in cat.DefaultIfEmpty() 
+                        join d in _context.tbl_case_priority on c.priority_id equals d.id into pri
+                        from pr in pri.DefaultIfEmpty() 
+                        join p in _context.tbl_case_assembly on c.assembly_id equals p.id into ass
+                        from aa in ass.DefaultIfEmpty() 
+                        where (sc == null || sc.delete_status == 0) 
+          && (pr == null || pr.delete_status == 0) && (aa == null || aa.delete_status == 0)
                         select new
                         {
                             c.id,
@@ -342,12 +322,12 @@ namespace case_management_api.Controllers
                             c.email,
                             c.mobile,
                             c.location,
-                            c.category_id,
-                            category = s.name,
+                            c.category_id, 
+                            category = sc.name,
                             c.priority_id,
                             c.assembly_id,
-                            assembly = p.name,
-                            priority = d.name,
+                            assembly = aa.name,
+                            priority = pr.name,
                             c.time,
                             c.date,
                             c.title,
@@ -400,6 +380,55 @@ namespace case_management_api.Controllers
                 data = dataResponse
             });
         }
+
+        [HttpGet]
+        [Route("cases_count")]
+        public async Task<ActionResult> cases_count()
+        {
+            try
+            {
+                // Get the current date
+                var curdate = DateTime.Now.Date;
+
+                // Fetch the count of total cases for the current date
+                //var todays_cases = await _context.tbl_case_cases
+                //    .Where(tbl => tbl.delete_status == 0 && tbl.date.Value == curdate)
+                //    .CountAsync();
+
+                var total_cases = await _context.tbl_case_cases
+                   .Where(tbl => tbl.delete_status == 0)
+                   .CountAsync();
+
+                //var pending_cases = await _context.tbl_case_cases
+                //    .Where(tbl => tbl.delete_status == 0 && tbl.status == "pending")
+                //    .CountAsync();
+
+                //var completed_cases = await _context.tbl_case_cases
+                //   .Where(tbl => tbl.delete_status == 0 && tbl.status == "completed")
+                //   .CountAsync();
+
+                // Return the response
+                return Ok(new
+                {
+                    status = true,
+                    data = new
+                    {
+                        total_cases
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                // Handle unexpected errors gracefully
+                return StatusCode(500, new
+                {
+                    status = false,
+                    message = "An error occurred while fetching total cases.",
+                    error = ex.Message
+                });
+            }
+        }
+
 
 
 

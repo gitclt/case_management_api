@@ -8,6 +8,8 @@
         public DateTime? addedon { get; set; }    
         public int? case_id { get; set; }
         public string? file { get; set; }
+        public string? name { get; set; }
+
 
 
     }

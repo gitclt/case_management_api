@@ -53,10 +53,7 @@ namespace case_management_api.Controllers
                 }
 
                 // Step 2: Decrypt the encrypted data
-                string decryptedData = _context.base64Decode(data); // Implement this method for your decryption logic
-                                                                    //  return Ok(decryptedData);   
-                                                                    // return Ok(decryptedData);       
-
+                string decryptedData = _context.base64Decode(data);
                 // Step 3: Split the decrypted data to extract username, password, and type
                 var parameters = decryptedData.Split('&');
                 string username = parameters.FirstOrDefault(p => p.StartsWith("username="))?.Split('=')[1];
@@ -155,7 +152,7 @@ namespace case_management_api.Controllers
                 .FirstOrDefaultAsync();
 
             var random = new Random();
-            otp = random.Next(1000, 9999).ToString(); // Generate random OTP
+            otp = random.Next(1000, 9999).ToString(); 
 
             if (user != null)
             {
@@ -205,13 +202,77 @@ namespace case_management_api.Controllers
 
                 await _context.SaveChangesAsync();
 
-                return Ok(new { status = true, message = "Successfully logged in", data = new { emp_id = user.id, token = user.enc_key,account_id=user.account_id } });
+                return Ok(new { status = true, message = "Successfully logged in", data = new { id = user.id, token = user.enc_key,account_id=user.account_id } });
             }
 
             return Ok(new { status = false, message = "Invalid credentials" });
 
 
         }
+
+        //[Route("Profile")]
+        //public async Task<IActionResult> Profile(string encKey)
+        //{
+        //    if (string.IsNullOrEmpty(encKey))
+        //    {
+        //        return BadRequest(new { status = false, message = "Token is missing." });
+        //    }
+        //    var baseUrl = $"{Request.Scheme}://{Request.Host}/";
+
+        //    // Query to fetch employee profile along with department details
+        //    var employee = await (from e in _context.tbl_case_login
+        //                          join s in dbContext.tbl_department on e.department_id equals s.Id into deptGroup
+        //                          from s in deptGroup.DefaultIfEmpty()
+        //                          where e.token_key == encKey
+        //                          select new
+        //                          {
+        //                              stall_id = e.Id,
+        //                              e.name,
+        //                              e.mobile,
+        //                              e.address,
+        //                              e.description,
+        //                              e.department_id,
+        //                              e.logo,
+        //                              department = s.name,
+        //                              rating = e.rating,
+        //                              company_name = e.company_name,
+        //                              e.website_address,
+        //                              Image = !string.IsNullOrEmpty(e.logo) ? $"{baseUrl}uploads/stall/{e.logo}" : null
+
+        //                          })
+        //                          .FirstOrDefaultAsync();
+
+        //    // Check if employee exists
+        //    if (employee == null)
+        //    {
+        //        return NotFound(new { status = false, message = "No profile found for the provided token." });
+        //    }
+
+        //    // Return employee profile data if found
+        //    return Ok(new
+        //    {
+        //        status = true,
+        //        message = "Success.",
+        //        data = new
+        //        {
+        //            employee.stall_id,
+        //            employee.name,
+        //            employee.mobile,
+        //            employee.address,
+        //            employee.department_id,
+        //            employee.department,
+        //            employee.description,
+        //            employee.rating,
+        //            employee.company_name,
+        //            employee.website_address,
+        //            employee.logo,
+        //            employee.Image
+
+        //        }
+        //    });
+        //}
+
+
 
     }
 }

@@ -97,7 +97,7 @@ namespace case_management_api.Controllers
         [HttpDelete]
         [Route("delete_subadmin")]
 
-        public async Task<IActionResult> delete_subadmin([FromForm] int id)
+        public async Task<IActionResult> delete_subadmin([FromForm] int? id)
         {
             if (_context.tbl_case_login == null)
             {
@@ -105,14 +105,17 @@ namespace case_management_api.Controllers
             }
 
             var div = await _context.tbl_case_login.FindAsync(id);
-
+ 
             if (div == null)
             {
                 return NotFound(new { status = false, message = "subadmin not found" });
             }
 
-            // Set delete_status to 1 for soft delete
+
             div.delete_status = 1;
+
+            var subadmins = _context.tbl_case_subadminassembly.Where(x => x.subadmin_id == id);
+            _context.tbl_case_subadminassembly.RemoveRange(subadmins);
 
             await _context.SaveChangesAsync();
 

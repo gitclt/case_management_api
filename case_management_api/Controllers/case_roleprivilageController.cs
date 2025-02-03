@@ -43,7 +43,7 @@ namespace case_management_api.Controllers
 
                 await _context.SaveChangesAsync();
 
-                return Ok(new { status = true, message = "Added Successfully" });
+                return Ok(new { status = true, message = "Data added Successfully" });
             }
             catch (Exception ex)
             {
@@ -102,6 +102,7 @@ namespace case_management_api.Controllers
         }
 
         [HttpGet("role_privilage_list")]
+
         public IActionResult role_privilage_list(int? role_id)
         {
             var configBuilder = new ConfigurationBuilder()
@@ -116,11 +117,12 @@ namespace case_management_api.Controllers
             //            string q = @"SELECT id,name,state_id,branch_code
             //FROM tbl_branch where id in ("+ result.BranchIds.TrimStart(',').TrimEnd(',') + ")";
 
-            string role_privilage = @"select p.module,p.menu,p.platform,up.is_add,up.is_delete,up.is_view,up.is_edit,up.privilage_id,up.id,r.id as role_id from tbl_case_role r
+            string role_privilage = @"select p.module,p.menu,p.platform,up.is_add,up.is_delete,
+up.is_view,up.is_edit,up.privilage_id,up.id,r.id as role_id from tbl_case_role r
         join tbl_case_role_privilage up on r.id =up.role_id
         join tbl_case_privilage p on p.id=up.privilage_id
         where r.id=" + role_id + " ";
-            //return Ok(role_privilage);
+            // return Ok(role_privilage);
             using (IDbConnection dbConnection = new SqlConnection(connectionString))
             {
 

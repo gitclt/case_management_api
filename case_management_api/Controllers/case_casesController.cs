@@ -273,7 +273,6 @@ namespace case_management_api.Controllers
 
                     empqry = empqry.Where(c => c.date >= startOfMonth && c.date <= endOfMonth);
                 }
-
             }
             //
 
@@ -310,6 +309,7 @@ namespace case_management_api.Controllers
                             c.date,
                             c.title,
                             c.description,
+                            c.subject,
                             c.status,
                             c.type,
                             contact_person = (
@@ -359,6 +359,7 @@ namespace case_management_api.Controllers
                     result.category_id,
                     result.category,
                     result.status,
+                    result.subject,
 
                 }).ToList();
             }
@@ -397,6 +398,8 @@ namespace case_management_api.Controllers
                     result.priority,
                     result.assembly_id,
                     result.assembly,
+                    result.category_id,
+                    result.category,
                     result.date,
                     result.time,
                     result.title,
@@ -504,6 +507,7 @@ namespace case_management_api.Controllers
                             c.title,
                             c.description,
                             c.type,
+                            c.subject,
                             c.status,
                             //case documents
                             case_documents = (
@@ -528,8 +532,9 @@ namespace case_management_api.Controllers
                                     cd.id,
                                     cd.remark,
                                     cd.status,
-                                    cd.addedon,
-                                    cd.case_id
+                                    date=cd.addedon,
+                                    cd.case_id,
+                                    cd.name
 
                                 }
                             ).ToList(), // Convert subquery to a list
@@ -572,8 +577,10 @@ namespace case_management_api.Controllers
                     result.date,
                     result.priority_id,
                     result.priority,
+                    result.assembly_id,
+                    result.assembly,
+                    result.subject,
                     result.status,
-
                     result.case_documents,
                     result.contact_person,
                     result.case_status
@@ -594,6 +601,8 @@ namespace case_management_api.Controllers
                     result.time,
                     result.priority_id,
                     result.priority,
+                    result.assembly_id,
+                    result.assembly,    
                     result.category_id,
                     result.category,
                     result.status,
@@ -618,6 +627,7 @@ namespace case_management_api.Controllers
                     result.priority_id,
                     result.priority,
                     result.assembly_id,
+                    result.assembly,
                     result.date,
                     result.title,
                     result.description,
@@ -642,7 +652,7 @@ namespace case_management_api.Controllers
 
         [HttpPut]
         [Route("update_status")]
-        public async Task<IActionResult> update_status([FromForm] int? id, [FromForm] string? status, [FromForm] string? remark, [FromForm] DateTime? reminder_date, [FromForm] IFormFile? document)
+        public async Task<IActionResult> update_status([FromForm] int? id, [FromForm] string? status, [FromForm] string? name, [FromForm] string? remark, [FromForm] DateTime? reminder_date, [FromForm] IFormFile? document)
         {
             if (id == null)
             {
@@ -686,6 +696,7 @@ namespace case_management_api.Controllers
                 status = status,
                 remark = remark,
                 addedon = DateTime.Now,
+                name=name,
                 file = fileName // Save the uploaded document's file name
                
             };
