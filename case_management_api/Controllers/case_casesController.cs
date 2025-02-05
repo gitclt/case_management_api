@@ -363,6 +363,8 @@ namespace case_management_api.Controllers
                             description = grouped.First().c.description,
                             subject = grouped.First().c.subject,
                             status = grouped.First().c.status,
+                            comment = grouped.First().c.comment,
+
                             type = grouped.First().c.type,
                             contact_person = (from ca in _context.tbl_case_contactperson
                                               where ca.case_id == grouped.Key
@@ -370,7 +372,8 @@ namespace case_management_api.Controllers
                                               {
                                                   ca.id,
                                                   contact_person = ca.name,
-                                                  ca.mobile
+                                                  ca.mobile,
+                                                  ca.designation
                                               }).ToList()
                         };
 
@@ -404,13 +407,13 @@ namespace case_management_api.Controllers
                     result.date,
                     result.priority_id,
                     result.priority,
+                    result.comment,
                     //app 
                     result.assembly_id,
                     result.assembly,
                     result.category_id,
                     result.category,
-                    result.activity,
-
+                   // result.activity,
                     result.status,
                     result.subject,
 
@@ -435,7 +438,7 @@ namespace case_management_api.Controllers
                     result.category_id,
                     result.category,
                     result.status,
-                    result.activity,
+                   // result.activity,
 
                     result.contact_person
 
@@ -459,7 +462,7 @@ namespace case_management_api.Controllers
                     result.time,
                     result.title,
                     result.description,
-                    result.activity,
+                  //  result.activity,
 
                     result.status,
                     result.contact_person
@@ -564,6 +567,8 @@ namespace case_management_api.Controllers
                             c.title,
                             c.description,
                             c.type,
+                            c.comment,
+
                             c.subject,
                             c.status,
                             //case documents
@@ -574,7 +579,7 @@ namespace case_management_api.Controllers
                                 {
                                     cd.id,
                                     document_path = !string.IsNullOrEmpty(cd.document)
-                                ? $"{baseUrl}uploads/{c.type}/{c.id}/{cd.document}"
+                                ? $"{baseUrl}wwwroot/uploads/{c.type}/{c.id}/{cd.document}"
                                 : null
                                 }
                             ).ToList(), // Convert subquery to a list
@@ -638,6 +643,7 @@ namespace case_management_api.Controllers
                     result.assembly,
                     result.subject,
                     result.status,
+                    result.comment,
                     result.case_documents,
                     result.contact_person,
                     result.case_status
@@ -663,7 +669,8 @@ namespace case_management_api.Controllers
                     result.category_id,
                     result.category,
                     result.status,
-
+                    result.comment,
+                    result.subject,
                     result.case_documents,
                     result.contact_person,
                     result.case_status

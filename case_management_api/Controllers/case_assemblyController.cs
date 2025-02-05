@@ -67,7 +67,10 @@ namespace case_management_api.Controllers
             {
                 data.modifiedby = request.modifiedby;
             }
-            request.modifiedon= DateTime.Now;   
+            if (request.modifiedon != null)
+            {
+                data.modifiedon = DateTime.Now;
+            }
 
             // Save changes to the database
             await _context.SaveChangesAsync();
