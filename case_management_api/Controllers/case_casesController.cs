@@ -333,49 +333,45 @@ namespace case_management_api.Controllers
             // Build the query
             var query = from c in empqry
                         join s in _context.tbl_case_category on c.category_id equals s.id into cat
-                        from sc in cat.DefaultIfEmpty() // Left join with tbl_case_category
+                        from sc in cat.DefaultIfEmpty()
                         join d in _context.tbl_case_priority on c.priority_id equals d.id into pri
-                        from pr in pri.DefaultIfEmpty() 
+                        from pr in pri.DefaultIfEmpty()
                         join p in _context.tbl_case_assembly on c.assembly_id equals p.id into ass
                         from a in ass.DefaultIfEmpty()
-
-                            //case status
                         join st in _context.tbl_case_status on c.id equals st.case_id into sts
                         from sta in sts.DefaultIfEmpty()
-
                         where (sc == null || sc.delete_status == 0) && pr.delete_status == 0
+                        group new { c, sc, pr, a, sta } by c.id into grouped // Group by c.id to remove duplicates
                         select new
                         {
-                            c.id,
-                            c.name,
-                            c.address,
-                            c.email,
-                            c.mobile,
-                            c.location,
-                            c.category_id,
-                            category = sc.name , // Handle nulls from left join
-                            c.priority_id,
-                            c.assembly_id,
-                            assembly = a.name,
-                            priority = pr.name,
-                            activity=sta.remark,
-                            c.time,
-                            c.date,
-                            c.title,
-                            c.description,
-                            c.subject,
-                            c.status,
-                            c.type,
-                            contact_person = (
-                                from ca in _context.tbl_case_contactperson
-                                where ca.case_id == c.id
-                                select new
-                                {
-                                    ca.id,
-                                    contact_person = ca.name, // Removed unnecessary ToString()
-                                    ca.mobile
-                                }
-                            ).ToList()
+                            id = grouped.Key,
+                            name = grouped.First().c.name,
+                            address = grouped.First().c.address,
+                            email = grouped.First().c.email,
+                            mobile = grouped.First().c.mobile,
+                            location = grouped.First().c.location,
+                            category_id = grouped.First().c.category_id,
+                            category = grouped.First().sc.name, // Handle nulls from left join
+                            priority_id = grouped.First().c.priority_id,
+                            assembly_id = grouped.First().c.assembly_id,
+                            assembly = grouped.First().a.name,
+                            priority = grouped.First().pr.name,
+                            activity = grouped.First().sta.remark,
+                            time = grouped.First().c.time,
+                            date = grouped.First().c.date,
+                            title = grouped.First().c.title,
+                            description = grouped.First().c.description,
+                            subject = grouped.First().c.subject,
+                            status = grouped.First().c.status,
+                            type = grouped.First().c.type,
+                            contact_person = (from ca in _context.tbl_case_contactperson
+                                              where ca.case_id == grouped.Key
+                                              select new
+                                              {
+                                                  ca.id,
+                                                  contact_person = ca.name,
+                                                  ca.mobile
+                                              }).ToList()
                         };
 
             if (!await query.AnyAsync())
@@ -387,9 +383,10 @@ namespace case_management_api.Controllers
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
             var resultList = await query
-                                 .Skip((page - 1) * pageSize)
-                                 .Take(pageSize)
-                                 .ToListAsync();
+                                  .Skip((page - 1) * pageSize)
+                                  .Take(pageSize)
+                                  .ToListAsync();
+
 
             // Filter and format response based on the `type` parameter
             object dataResponse;
