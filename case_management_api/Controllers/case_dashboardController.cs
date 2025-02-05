@@ -16,80 +16,88 @@ namespace case_management_api.Controllers
             _context = context;
         }
         //(todays and upcoming activities)
+       
         [HttpGet]
         [Route("case_activities")]
-        public async Task<ActionResult> case_activities(string type)
+        public async Task<ActionResult> case_activities(string? type, string? activity)
         {
             var curdate = DateTime.Now.Date;
             var startOfWeek = curdate.AddDays(7);
 
-            if (type == "today")
+            if (type == "app")
             {
-                var supportrequest = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.date == curdate);
-                var supportrequest_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.date == curdate && tbl.reminder_date == curdate);
-
-                var program_schedule = _context.tbl_case_cases.Count(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.date == curdate);
-                var programschedule_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.date == curdate && tbl.reminder_date == curdate);
-
-                var wedding_reminder = _context.tbl_case_cases.Count(tbl => tbl.type == "wedding reminder" && tbl.delete_status == 0 && tbl.date == curdate);
-                var weddingreminders = _context.tbl_case_cases.Count(tbl => tbl.type == "wedding reminder" && tbl.delete_status == 0 && tbl.date == curdate && tbl.reminder_date == curdate);
-
-                return Ok(new
+                if (activity == "today")
                 {
-                    status = true,
-                    data = new[]
+                    var supportrequest = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.date == curdate);
+                    var supportrequest_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.date == curdate && tbl.reminder_date == curdate);
+
+                    var program_schedule = _context.tbl_case_cases.Count(tbl => tbl.type != "support request" && tbl.delete_status == 0 && tbl.date == curdate);
+                    var programschedule_reminders = _context.tbl_case_cases.Count(tbl => tbl.type != "support request" && tbl.delete_status == 0 && tbl.date == curdate && tbl.reminder_date == curdate);
+
+                    return Ok(new
                     {
-                new
+                        status = true,
+                        data = new
+                        {
+                            supportrequest,
+                            supportReminders = supportrequest_reminders,
+                            programschedule_reminders,
+                            program_schedule
+                        }
+                    });
+                }
+                else if (activity == "upcoming")
                 {
-                    supportrequest,
-                    supportReminders = supportrequest_reminders,
-                    programschedule_reminders,
-                    program_schedule,
-                    wedding_reminder,
-                    weddingreminders
+                    var supportrequest = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.date > curdate && tbl.date <= startOfWeek);
+                    var supportrequest_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.reminder_date > curdate && tbl.reminder_date <= startOfWeek);
+
+                    var program_schedule = _context.tbl_case_cases.Count(tbl => tbl.delete_status == 0 && tbl.date > curdate && tbl.date <= startOfWeek);
+                    var programschedule_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.reminder_date > curdate && tbl.reminder_date <= startOfWeek);
+
+                    return Ok(new
+                    {
+                        status = true,
+                        data = new
+                        {
+                            supportrequest,
+                            supportReminders = supportrequest_reminders,
+                            programschedule_reminders,
+                            program_schedule
+                        }
+                    });
                 }
             }
-                });
-            }
-            else if (type == "upcoming")
+            else if (type == "web")
             {
-               // var supportrequest = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.date == startOfWeek);
-
-                var program_schedule = _context.tbl_case_cases.Count(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.date >= curdate && tbl.date <= startOfWeek);
-                var program_schedule_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.reminder_date >= curdate && tbl.reminder_date <= startOfWeek);
-
-                var birthday_reminder = _context.tbl_case_cases.Count(tbl => tbl.type == "birthday reminder" && tbl.delete_status == 0 && tbl.reminder_date >= curdate && tbl.reminder_date <= startOfWeek);
-
-
-                var support_request = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.date >= curdate && tbl.date <= startOfWeek);
-                var support_request_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.reminder_date >= curdate && tbl.reminder_date <= startOfWeek);
-
-
-                var wedding = _context.tbl_case_cases.Count(tbl => tbl.type == "wedding reminder" && tbl.delete_status == 0 && tbl.date >= curdate && tbl.date <= startOfWeek);
-
-                var wedding_reminder = _context.tbl_case_cases.Count(tbl => tbl.type == "wedding reminder" && tbl.delete_status == 0 && tbl.reminder_date >= curdate && tbl.reminder_date <= startOfWeek);
-
-                return Ok(new
+                if (activity == "today" || activity == "upcoming")
                 {
-                    status = true,
-                    data = new[]
+                    var program_schedule = _context.tbl_case_cases.Count(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.date >= curdate && tbl.date <= startOfWeek);
+                    var program_schedule_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.reminder_date >= curdate && tbl.reminder_date <= startOfWeek);
+
+                    var birthday_reminder = _context.tbl_case_cases.Count(tbl => tbl.type == "birthday reminder" && tbl.delete_status == 0 && tbl.reminder_date >= curdate && tbl.reminder_date <= startOfWeek);
+
+                    var support_request = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.date >= curdate && tbl.date <= startOfWeek);
+                    var support_request_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.reminder_date >= curdate && tbl.reminder_date <= startOfWeek);
+
+                    var wedding = _context.tbl_case_cases.Count(tbl => tbl.type == "wedding reminder" && tbl.delete_status == 0 && tbl.date >= curdate && tbl.date <= startOfWeek);
+                    var wedding_reminder = _context.tbl_case_cases.Count(tbl => tbl.type == "wedding reminder" && tbl.delete_status == 0 && tbl.reminder_date >= curdate && tbl.reminder_date <= startOfWeek);
+
+                    return Ok(new
                     {
-                new
-                {
-                   // program_schedule,
-                    program_schedule_reminders,
-                   // wedding,
-                    wedding_reminder,
-                    birthday_reminder,
+                        status = true,
+                        data = new
+                        {
+                            program_schedule_reminders,
+                            wedding_reminder,
+                            birthday_reminder
+                        }
+                    });
                 }
             }
-                });
-            }
-            else
-            {
-                return BadRequest(new { status = false, message = "Invalid type. Use 'today' or 'upcoming'." });
-            }
+
+            return BadRequest(new { status = false, message = "Invalid type. Use 'app' or 'web' and activity 'today' or 'upcoming'." });
         }
+
 
         //
         [HttpGet]
