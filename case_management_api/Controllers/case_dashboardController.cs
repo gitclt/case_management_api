@@ -31,8 +31,8 @@ namespace case_management_api.Controllers
                     var supportrequest = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.date == curdate);
                     var supportrequest_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.date == curdate && tbl.reminder_date == curdate);
 
-                    var program_schedule = _context.tbl_case_cases.Count(tbl => tbl.type != "support request" && tbl.delete_status == 0 && tbl.date == curdate);
-                    var programschedule_reminders = _context.tbl_case_cases.Count(tbl => tbl.type != "support request" && tbl.delete_status == 0 && tbl.date == curdate && tbl.reminder_date == curdate);
+                    var program_schedule = _context.tbl_case_cases.Count(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.date == curdate);
+                    var programschedule_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.date == curdate && tbl.reminder_date == curdate);
 
                     return Ok(new
                     {

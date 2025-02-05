@@ -399,6 +399,7 @@ namespace case_management_api.Controllers
                 dataResponse = resultList.Select(result => new
                 {
                     result.id,
+                    result.type,
                     result.name,
                     result.email,
                     result.mobile,
@@ -425,6 +426,7 @@ namespace case_management_api.Controllers
                 {
                     result.id,
                     //  result.name,
+                    result.type,
                     result.location,
                     result.title,
                     result.description,
@@ -450,7 +452,7 @@ namespace case_management_api.Controllers
                 dataResponse = resultList.Select(result => new
                 {
                     result.id,
-
+                    result.type,
                     result.location,
                     result.priority_id,
                     result.priority,
