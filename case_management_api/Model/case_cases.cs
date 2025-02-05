@@ -49,5 +49,9 @@ namespace case_management_api.Model
 
         public string? status { get; set; } 
         public string? subject { get; set; } 
+        public DateTime? deleted_on { get; set; } 
+        public DateTime? modified_on { get; set; } 
+        public int? modified_by { get; set; } 
+        public int? deleted_by { get; set; } 
     }
 }

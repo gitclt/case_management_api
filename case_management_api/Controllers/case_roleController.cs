@@ -104,7 +104,7 @@ namespace case_management_api.Controllers
 
         [HttpGet]
         [Route("get_role")]
-        public async Task<IActionResult> get_role(int? id,int? hierarchy_id)
+        public async Task<IActionResult> get_role(int? id,int? hierarchy_id,int? account_id)
         {
             if (_context.tbl_case_role == null)
             {
@@ -121,6 +121,10 @@ namespace case_management_api.Controllers
             if (hierarchy_id.HasValue)
             {
                 roleQuery = roleQuery.Where(g => g.hierarchy_id == hierarchy_id.Value); // Fix: retrieve the specific id
+            }
+            if (account_id.HasValue)
+            {
+                roleQuery = roleQuery.Where(g => g.account_id == account_id.Value); // Fix: retrieve the specific id
             }
 
             var query = from c in roleQuery

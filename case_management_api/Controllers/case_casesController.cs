@@ -79,6 +79,83 @@ namespace case_management_api.Controllers
 
         [HttpPut]
         [Route("Updatecases")]
+        //public async Task<ActionResult> Updatecases(case_cases request)
+        //{
+        //    if (_context.tbl_case_cases == null)
+        //    {
+        //        return Problem("Entity set '_context.tbl_case_cases' is null.");
+        //    }
+
+        //    if (request.id.HasValue)
+        //    {
+        //        return BadRequest(new { status = false, message = "ID is required" });
+        //    }
+
+        //    var case_id = request.id.Value;
+
+        //    var existingEmployee = await _context.tbl_case_cases.FindAsync(case_id);
+        //    if (existingEmployee == null)
+        //    {
+        //        return NotFound(new { status = false, message = "cases not found" });
+        //    }
+        //    if (!string.IsNullOrEmpty(request.type))
+        //    {
+        //        existingEmployee.type = request.type;
+        //    }
+        //    if (!string.IsNullOrEmpty(request.name))
+        //    {
+        //        existingEmployee.name = request.name;
+        //    }
+        //    if (!string.IsNullOrEmpty(request.address))
+        //    {
+        //        existingEmployee.address = request.address;
+        //    }
+        //    if (!string.IsNullOrEmpty(request.email))
+        //    {
+        //        existingEmployee.email = request.email;
+        //    }
+        //    if (!string.IsNullOrEmpty(request.mobile))
+        //    {
+        //        existingEmployee.mobile = request.mobile;
+        //    }
+        //    if (!string.IsNullOrEmpty(request.location))
+        //    {
+        //        existingEmployee.location = request.location;
+        //    }
+        //    if (request.category_id.HasValue)
+        //    {
+        //        existingEmployee.category_id = request.category_id;
+        //    }
+        //    if (request.priority_id.HasValue)
+        //    {
+        //        existingEmployee.priority_id = request.priority_id.Value;
+        //    }
+
+        //    if (request.assembly_id.HasValue)
+        //    {
+        //        existingEmployee.assembly_id = request.assembly_id.Value;
+        //    }
+        //    if (!string.IsNullOrEmpty(request.title))
+        //    {
+        //        existingEmployee.title = request.title;
+        //    }
+        //    if (!string.IsNullOrEmpty(request.comment))
+        //    {
+        //        existingEmployee.comment = request.comment;
+        //    }
+        //    if (request.date.HasValue)
+        //    {
+        //        existingEmployee.date = request.date;
+        //    }
+        //    if (!string.IsNullOrEmpty(request.description))
+        //    {
+        //        existingEmployee.description = request.description;
+        //    }
+        //    // Save changes to the database
+        //    await _context.SaveChangesAsync();
+
+        //    return Ok(new { status = true, message = "Data updated successfully" });
+        //}
         public async Task<ActionResult> Updatecases(case_cases request)
         {
             if (_context.tbl_case_cases == null)
@@ -86,81 +163,50 @@ namespace case_management_api.Controllers
                 return Problem("Entity set '_context.tbl_case_cases' is null.");
             }
 
-            if (request.id.HasValue)
+            if (!request.id.HasValue) // Fixing the ID validation
             {
-                return BadRequest(new { status = false, message = "Employee ID is required" });
+                return BadRequest(new { status = false, message = "ID is required" });
             }
 
             var case_id = request.id.Value;
+            var existingCase = await _context.tbl_case_cases.FindAsync(case_id);
 
-            var existingEmployee = await _context.tbl_case_cases.FindAsync(case_id);
-            if (existingEmployee == null)
+            if (existingCase == null)
             {
-                return NotFound(new { status = false, message = "cases not found" });
-            }
-            if (!string.IsNullOrEmpty(request.type))
-            {
-                existingEmployee.type = request.type;
-            }
-            if (!string.IsNullOrEmpty(request.name))
-            {
-                existingEmployee.name = request.name;
-            }
-            if (!string.IsNullOrEmpty(request.address))
-            {
-                existingEmployee.address = request.address;
-            }
-            if (!string.IsNullOrEmpty(request.email))
-            {
-                existingEmployee.email = request.email;
-            }
-            if (!string.IsNullOrEmpty(request.mobile))
-            {
-                existingEmployee.mobile = request.mobile;
-            }
-            if (!string.IsNullOrEmpty(request.location))
-            {
-                existingEmployee.location = request.location;
-            }
-            if (request.category_id.HasValue)
-            {
-                existingEmployee.category_id = request.category_id;
-            }
-            if (request.priority_id.HasValue)
-            {
-                existingEmployee.priority_id = request.priority_id.Value;
+                return NotFound(new { status = false, message = "Case not found" });
             }
 
-            if (request.assembly_id.HasValue)
-            {
-                existingEmployee.assembly_id = request.assembly_id.Value;
-            }
-            if (!string.IsNullOrEmpty(request.title))
-            {
-                existingEmployee.title = request.title;
-            }
-            if (!string.IsNullOrEmpty(request.comment))
-            {
-                existingEmployee.comment = request.comment;
-            }
-            if (request.date.HasValue)
-            {
-                existingEmployee.date = request.date;
-            }
-            if (!string.IsNullOrEmpty(request.description))
-            {
-                existingEmployee.description = request.description;
-            }
+            // Updating fields only if they are provided in the request
+            existingCase.type = !string.IsNullOrEmpty(request.type) ? request.type : existingCase.type;
+            existingCase.name = !string.IsNullOrEmpty(request.name) ? request.name : existingCase.name;
+            existingCase.address = !string.IsNullOrEmpty(request.address) ? request.address : existingCase.address;
+            existingCase.email = !string.IsNullOrEmpty(request.email) ? request.email : existingCase.email;
+            existingCase.mobile = !string.IsNullOrEmpty(request.mobile) ? request.mobile : existingCase.mobile;
+            existingCase.location = !string.IsNullOrEmpty(request.location) ? request.location : existingCase.location;
+            existingCase.category_id = request.category_id ?? existingCase.category_id;
+            existingCase.priority_id = request.priority_id ?? existingCase.priority_id;
+            existingCase.assembly_id = request.assembly_id ?? existingCase.assembly_id;
+            existingCase.title = !string.IsNullOrEmpty(request.title) ? request.title : existingCase.title;
+            existingCase.comment = !string.IsNullOrEmpty(request.comment) ? request.comment : existingCase.comment;
+            existingCase.date = request.date ?? existingCase.date;
+            existingCase.description = !string.IsNullOrEmpty(request.description) ? request.description : existingCase.description;
+            existingCase.modified_by= request.modified_by ?? existingCase.modified_by;
+            existingCase.modified_on=DateTime.Now;  
+            // Mark the entity as modified to ensure it gets updated
+            _context.Entry(existingCase).State = EntityState.Modified;
+
             // Save changes to the database
             await _context.SaveChangesAsync();
 
             return Ok(new { status = true, message = "Data updated successfully" });
         }
 
+
+
         [HttpDelete]
         [Route("delete_cases")]
 
-        public async Task<IActionResult> delete_cases([FromForm] int id)
+        public async Task<IActionResult> delete_cases([FromForm] int id, [FromForm] int? deleted_by)
         {
             if (_context.tbl_case_cases == null)
             {
@@ -176,6 +222,8 @@ namespace case_management_api.Controllers
 
             // Set delete_status to 1 for soft delete
             div.delete_status = 1;
+            div.deleted_by = deleted_by;    
+            div.deleted_on = DateTime.Now;      
 
             await _context.SaveChangesAsync();
 
@@ -289,7 +337,12 @@ namespace case_management_api.Controllers
                         join d in _context.tbl_case_priority on c.priority_id equals d.id into pri
                         from pr in pri.DefaultIfEmpty() 
                         join p in _context.tbl_case_assembly on c.assembly_id equals p.id into ass
-                        from a in ass.DefaultIfEmpty()      
+                        from a in ass.DefaultIfEmpty()
+
+                            //case status
+                        join st in _context.tbl_case_status on c.id equals st.case_id into sts
+                        from sta in sts.DefaultIfEmpty()
+
                         where (sc == null || sc.delete_status == 0) && pr.delete_status == 0
                         select new
                         {
@@ -305,6 +358,7 @@ namespace case_management_api.Controllers
                             c.assembly_id,
                             assembly = a.name,
                             priority = pr.name,
+                            activity=sta.remark,
                             c.time,
                             c.date,
                             c.title,
@@ -358,6 +412,8 @@ namespace case_management_api.Controllers
                     result.assembly,
                     result.category_id,
                     result.category,
+                    result.activity,
+
                     result.status,
                     result.subject,
 
@@ -382,6 +438,8 @@ namespace case_management_api.Controllers
                     result.category_id,
                     result.category,
                     result.status,
+                    result.activity,
+
                     result.contact_person
 
                 }).ToList();
@@ -404,6 +462,8 @@ namespace case_management_api.Controllers
                     result.time,
                     result.title,
                     result.description,
+                    result.activity,
+
                     result.status,
                     result.contact_person
 

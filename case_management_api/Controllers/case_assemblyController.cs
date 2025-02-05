@@ -97,7 +97,7 @@ namespace case_management_api.Controllers
         [HttpGet]
         [Route("get_assembly")]
 
-        public async Task<IActionResult> get_assembly(int? id)
+        public async Task<IActionResult> get_assembly(int? id,int? account_id)
         {
             if (_context.tbl_case_assembly == null)
             {
@@ -111,6 +111,10 @@ namespace case_management_api.Controllers
             if (id.HasValue)
             {
                 divisionQuery = divisionQuery.Where(d => d.id == id.Value);
+            }
+            if (account_id.HasValue)
+            {
+                divisionQuery = divisionQuery.Where(d => d.account_id == account_id.Value);
             }
 
             var cat = divisionQuery

@@ -125,7 +125,7 @@ namespace case_management_api.Controllers
         [HttpGet]
         [Route("get_subadmin")]
 
-        public async Task<IActionResult> get_subadmin(int? id)
+        public async Task<IActionResult> get_subadmin(int? id,int? account_id)
         {
             if (_context.tbl_case_login == null)
             {
@@ -155,7 +155,7 @@ namespace case_management_api.Controllers
                     ).ToList()
                 })
                 .ToList();
-
+           
             // Check if no results were found
             if (query == null || query.Count == 0)
             {

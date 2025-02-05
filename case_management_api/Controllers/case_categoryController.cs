@@ -28,7 +28,9 @@ namespace case_management_api.Controllers
             {
                 name = request.name,
                 account_id = request.account_id,
-                delete_status = 0
+                delete_status = 0,
+                addedby = request.addedby,  
+                addedon=DateTime.Now,       
             };
 
 
@@ -60,6 +62,12 @@ namespace case_management_api.Controllers
             if (request.account_id != null)
             { data.account_id = request.account_id; }
 
+            if (request.modifiedby != null)
+            { 
+                data.modifiedby = request.modifiedby; 
+            }
+            request.modifiedon= DateTime.Now;       
+
 
             // Save changes to the database
             await _context.SaveChangesAsync();
@@ -70,7 +78,7 @@ namespace case_management_api.Controllers
 
         [HttpDelete]
         [Route("delete_category")]
-        public async Task<IActionResult> delete_category([FromForm] int id)
+        public async Task<IActionResult> delete_category([FromForm] int id, [FromForm] int?deletedby)
         {
             if (_context.tbl_case_category == null)
             {
@@ -86,6 +94,8 @@ namespace case_management_api.Controllers
 
             // Set delete_status to 1 for soft delete
             div.delete_status = 1;
+            div.deletedby = deletedby;  
+            div.deletedon= DateTime.Now;        
 
             await _context.SaveChangesAsync();
 
@@ -95,7 +105,7 @@ namespace case_management_api.Controllers
         [HttpGet]
         [Route("get_category")]
 
-        public async Task<IActionResult> get_category(int? id)
+        public async Task<IActionResult> get_category(int? id,int? account_id)
         {
             if (_context.tbl_case_category == null)
             {
@@ -109,6 +119,10 @@ namespace case_management_api.Controllers
             if (id.HasValue)
             {
                 divisionQuery = divisionQuery.Where(d => d.id == id.Value);
+            }
+            if (account_id.HasValue)
+            {
+                divisionQuery = divisionQuery.Where(d => d.account_id == account_id.Value);
             }
 
             var cat = divisionQuery

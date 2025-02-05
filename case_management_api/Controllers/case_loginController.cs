@@ -210,67 +210,53 @@ namespace case_management_api.Controllers
 
         }
 
-        //[Route("Profile")]
-        //public async Task<IActionResult> Profile(string encKey)
-        //{
-        //    if (string.IsNullOrEmpty(encKey))
-        //    {
-        //        return BadRequest(new { status = false, message = "Token is missing." });
-        //    }
-        //    var baseUrl = $"{Request.Scheme}://{Request.Host}/";
+        [HttpGet]
 
-        //    // Query to fetch employee profile along with department details
-        //    var employee = await (from e in _context.tbl_case_login
-        //                          join s in dbContext.tbl_department on e.department_id equals s.Id into deptGroup
-        //                          from s in deptGroup.DefaultIfEmpty()
-        //                          where e.token_key == encKey
-        //                          select new
-        //                          {
-        //                              stall_id = e.Id,
-        //                              e.name,
-        //                              e.mobile,
-        //                              e.address,
-        //                              e.description,
-        //                              e.department_id,
-        //                              e.logo,
-        //                              department = s.name,
-        //                              rating = e.rating,
-        //                              company_name = e.company_name,
-        //                              e.website_address,
-        //                              Image = !string.IsNullOrEmpty(e.logo) ? $"{baseUrl}uploads/stall/{e.logo}" : null
+        [Route("Profile")]
+        public async Task<IActionResult> Profile(string encKey)
+        {
+            if (string.IsNullOrEmpty(encKey))
+            {
+                return BadRequest(new { status = false, message = "Token is missing." });
+            }
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/";
 
-        //                          })
-        //                          .FirstOrDefaultAsync();
+            // Query to fetch employee profile along with department details
+            var employee = await (from e in _context.tbl_case_login
 
-        //    // Check if employee exists
-        //    if (employee == null)
-        //    {
-        //        return NotFound(new { status = false, message = "No profile found for the provided token." });
-        //    }
+                                  where e.enc_key == encKey
+                                  select new
+                                  {
+                                      e.username,
+                                      e.account_id,
+                                      e.name,
+                                      e.mobile
 
-        //    // Return employee profile data if found
-        //    return Ok(new
-        //    {
-        //        status = true,
-        //        message = "Success.",
-        //        data = new
-        //        {
-        //            employee.stall_id,
-        //            employee.name,
-        //            employee.mobile,
-        //            employee.address,
-        //            employee.department_id,
-        //            employee.department,
-        //            employee.description,
-        //            employee.rating,
-        //            employee.company_name,
-        //            employee.website_address,
-        //            employee.logo,
-        //            employee.Image
+                                  })
+                                  .FirstOrDefaultAsync();
 
-        //        }
-        //    });
-        //}
+            // Check if employee exists
+            if (employee == null)
+            {
+                return NotFound(new { status = false, message = "No profile found for the provided token." });
+            }
+
+            // Return employee profile data if found
+            return Ok(new
+            {
+                status = true,
+                message = "Success.",
+                data = new
+                {
+                    employee.username,
+                    employee.account_id,
+                  employee.name,
+                  employee.mobile
+
+
+                }
+            });
+        }
 
 
 
