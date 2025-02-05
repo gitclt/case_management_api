@@ -78,7 +78,7 @@ namespace case_management_api.Controllers
 
         [HttpDelete]
         [Route("delete_category")]
-        public async Task<IActionResult> delete_category([FromForm] int id, [FromForm] int?deletedby)
+        public async Task<IActionResult> delete_category([FromForm] int id, [FromForm] int? deletedby)
         {
             if (_context.tbl_case_category == null)
             {

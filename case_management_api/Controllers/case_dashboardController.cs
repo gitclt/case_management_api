@@ -58,6 +58,8 @@ namespace case_management_api.Controllers
                 var program_schedule = _context.tbl_case_cases.Count(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.date >= curdate && tbl.date <= startOfWeek);
                 var program_schedule_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.reminder_date >= curdate && tbl.reminder_date <= startOfWeek);
 
+                var birthday_reminder = _context.tbl_case_cases.Count(tbl => tbl.type == "birthday reminder" && tbl.delete_status == 0 && tbl.reminder_date >= curdate && tbl.reminder_date <= startOfWeek);
+
 
                 var support_request = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.date >= curdate && tbl.date <= startOfWeek);
                 var support_request_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.reminder_date >= curdate && tbl.reminder_date <= startOfWeek);
@@ -74,10 +76,11 @@ namespace case_management_api.Controllers
                     {
                 new
                 {
-                    program_schedule,
+                   // program_schedule,
                     program_schedule_reminders,
-                    wedding,
-                    wedding_reminder
+                   // wedding,
+                    wedding_reminder,
+                    birthday_reminder,
                 }
             }
                 });

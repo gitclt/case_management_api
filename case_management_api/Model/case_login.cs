@@ -14,6 +14,8 @@
         public string? contact_person { get; set; }
         public string? mobile { get; set; }
         public int? otp { get; set; }
+        public DateTime? addedon { get; set; }
+        public DateTime? deletedon { get; set; }
 
         public int? delete_status { get; set; }
     }

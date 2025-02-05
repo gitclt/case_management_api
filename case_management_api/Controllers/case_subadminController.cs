@@ -35,7 +35,8 @@ namespace case_management_api.Controllers
                 account_id = request.account_id,
                 active_status = request.active_status,
                 type = "subadmin",
-                delete_status = 0
+                delete_status = 0,
+                addedon=DateTime.Now,   
             };
 
 
@@ -113,6 +114,7 @@ namespace case_management_api.Controllers
 
 
             div.delete_status = 1;
+            div.deletedon=DateTime.Now; 
 
             var subadmins = _context.tbl_case_subadminassembly.Where(x => x.subadmin_id == id);
             _context.tbl_case_subadminassembly.RemoveRange(subadmins);
