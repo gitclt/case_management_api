@@ -116,18 +116,25 @@ namespace case_management_api.Controllers
                    
                     var program_schedule = _context.tbl_case_cases.Count(tbl => tbl.delete_status == 0 && tbl.date > curdate && tbl.date <= startOfWeek);
                     var programschedule_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "program schedule" && tbl.delete_status == 0 && tbl.reminder_date > curdate && tbl.reminder_date <= startOfWeek);
-                    var wedding_reminder = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.date > curdate && tbl.date <= startOfWeek);
-                  //  var supportrequest_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "support request" && tbl.delete_status == 0 && tbl.reminder_date > curdate && tbl.reminder_date <= startOfWeek);
+                    var wedding = _context.tbl_case_cases.Count(tbl => tbl.type == "wedding" && tbl.delete_status == 0 && tbl.date > curdate && tbl.date <= startOfWeek);
+                   var wedding_reminders = _context.tbl_case_cases.Count(tbl => tbl.type == "wedding" && tbl.delete_status == 0 && tbl.reminder_date > curdate && tbl.reminder_date <= startOfWeek);
+                    var birthday = _context.tbl_case_cases.Count(tbl => tbl.type == "birthday" && tbl.delete_status == 0 && tbl.reminder_date > curdate && tbl.reminder_date <= startOfWeek);
+                    var meeting = _context.tbl_case_cases.Count(tbl => tbl.type == "meeting" && tbl.delete_status == 0 && tbl.reminder_date > curdate && tbl.reminder_date <= startOfWeek);
+                    var inauguration = _context.tbl_case_cases.Count(tbl => tbl.type == "inauguration" && tbl.delete_status == 0 && tbl.reminder_date > curdate && tbl.reminder_date <= startOfWeek);
 
                     return Ok(new
                     {
                         status = true,
                         data = new
                         {
-                            supportrequest,
+                           // supportrequest,
                             supportReminders = supportrequest_reminders,
                             programschedule_reminders,
-                            program_schedule
+                          wedding_reminders,
+                          birthday,
+                          meeting,
+                            inauguration,
+
                         }
                     });
                 }
