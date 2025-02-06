@@ -581,7 +581,7 @@ namespace case_management_api.Controllers
                                 {
                                     cd.id,
                                     document_path = !string.IsNullOrEmpty(cd.document)
-                                ? $"{baseUrl}wwwroot/uploads/{c.type}/{c.id}/{cd.document}"
+                                ? $"{baseUrl}uploads/{c.type}/{c.id}/{cd.document}"
                                 : null
                                 }
                             ).ToList(), // Convert subquery to a list

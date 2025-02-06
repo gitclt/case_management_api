@@ -60,6 +60,7 @@ namespace api_case_management.Data
         public DbSet<case_status> tbl_case_status { get; set; }
         public DbSet<case_privilage> tbl_case_privilage { get; set; }
 
+        public DbSet<appversionmodel> tbl_case_app_version { get; set; }
 
 
 

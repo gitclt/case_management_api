@@ -2,6 +2,7 @@
 using api_case_management.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace case_management_api.Controllers
 {
@@ -90,6 +91,13 @@ namespace case_management_api.Controllers
             if (div == null)
             {
                 return NotFound(new { status = false, message = "category not found" });
+            }
+
+            bool hasActiveCases = await _context.tbl_case_cases.AnyAsync(c => c.category_id == id && c.delete_status == 0);
+
+            if (hasActiveCases)
+            {
+                return BadRequest(new { status = false, message = "Cannot delete category as active cases exist under this category." });
             }
 
             // Set delete_status to 1 for soft delete
