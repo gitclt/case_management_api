@@ -116,5 +116,39 @@ namespace case_management_api.Controllers
         }
 
 
+        [HttpDelete]
+        [Route("case_document_delete")]
+        public async Task<ActionResult> case_document_delete([FromForm] int id)
+        {
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/";
+
+            // Find the document in the database
+            var document = await _context.tbl_case_documents.FindAsync(id);
+
+            if (document == null)
+            {
+                return NotFound(new { status = false, message = "Document not found" });
+            }
+
+            // Get the file path
+            string documentPath = !string.IsNullOrEmpty(document.document)
+                      ? $"{baseUrl}uploads/{document.type}/{document.id}/{document.document}"
+                      : null;
+
+
+            // Delete the file from the server
+            if (!string.IsNullOrEmpty(documentPath) && System.IO.File.Exists(documentPath))
+            {
+                System.IO.File.Delete(documentPath);
+            }
+
+            // Remove the document entry from the database
+            _context.tbl_case_documents.Remove(document);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { status = true, message = "Document deleted successfully" });
+        }
+
+
     }
 }

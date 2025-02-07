@@ -9,6 +9,10 @@
         public int? case_id { get; set; }
         public string? file { get; set; }
         public string? name { get; set; }
+        public DateTime? date { get; set; }
+        public string? type { get; set; }
+
+
 
 
 

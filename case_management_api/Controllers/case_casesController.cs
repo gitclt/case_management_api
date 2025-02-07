@@ -28,7 +28,16 @@ namespace case_management_api.Controllers
             {
                 return Problem("Entity set '_context.tbl_case_cases'  is null.");
             }
-
+            //validation based on field length in db
+            if (request.name.Length > 100)
+            {
+                return BadRequest(new { status = false, message = "Name cannot exceed 100 characters." });
+            }
+            if (request.address.Length > 50)
+            {
+                return BadRequest(new { status = false, message = "address cannot exceed 50 characters." });
+            }
+            //
             var division = new case_cases
             {
                 account_id = request.account_id,
@@ -490,6 +499,15 @@ namespace case_management_api.Controllers
         {
             var baseUrl = $"{Request.Scheme}://{Request.Host}/";
 
+            //if (!id.HasValue) // Check if id is null
+            //{
+            //    return BadRequest(new { status = false, message = "ID required" });
+            //}
+            //if (string.IsNullOrWhiteSpace(type)) // Check if type is null or empty
+            //{
+            //    return BadRequest(new { status = false, message = "Type required" });
+            //}
+
             if (_context.tbl_case_cases == null)
             {
                 return Problem("Entity set '_context.tbl_case_cases' is null.");
@@ -499,9 +517,9 @@ namespace case_management_api.Controllers
             var empqry = _context.tbl_case_cases
                                  .Where(e => e.delete_status == 0);
 
-            if (id.HasValue)
+            if (id!=null)
             {
-                empqry = empqry.Where(e => e.id == id.Value);
+                empqry = empqry.Where(e => e.id == id);
             }
             if (account_id.HasValue && account_id > 0)
             {
@@ -596,7 +614,7 @@ namespace case_management_api.Controllers
                                     cd.id,
                                     cd.remark,
                                     cd.status,
-                                    date=cd.addedon,
+                                    date=cd.date,
                                     cd.case_id,
                                     cd.name
 
@@ -631,6 +649,7 @@ namespace case_management_api.Controllers
                 dataResponse = query.Select(result => new
                 {
                     result.id,
+                    result.type,
                     result.name,
                     result.email,
                     result.mobile,
@@ -657,6 +676,7 @@ namespace case_management_api.Controllers
                 dataResponse = query.Select(result => new
                 {
                     result.id,
+                    result.type,    
                     result.location,
                     result.title,
                     result.name,
@@ -686,7 +706,7 @@ namespace case_management_api.Controllers
                 dataResponse = query.Select(result => new
                 {
                     result.id,
-
+                    result.type,
                     result.location,
                     result.category_id,
                     result.category,
@@ -718,7 +738,7 @@ namespace case_management_api.Controllers
 
         [HttpPut]
         [Route("update_status")]
-        public async Task<IActionResult> update_status([FromForm] int? id, [FromForm] string? status, [FromForm] string? name, [FromForm] string? remark, [FromForm] DateTime? reminder_date, [FromForm] IFormFile? document)
+        public async Task<IActionResult> update_status([FromForm] int? id, [FromForm] string? status, [FromForm] string? name, [FromForm] string? remark, [FromForm] DateTime? reminder_date, [FromForm] IFormFile? document, [FromForm] DateTime? date, [FromForm] string? type)
         {
             if (id == null)
             {
@@ -731,9 +751,10 @@ namespace case_management_api.Controllers
                 return NotFound(new { status = false, message = "Case not found" });
             }
 
-            // Update the order details
+            // Update the case details
             order.status = status;
             order.reminder_date = reminder_date;
+            order.date= date;       
             await _context.SaveChangesAsync();
 
             // Handle document upload
@@ -763,6 +784,8 @@ namespace case_management_api.Controllers
                 remark = remark,
                 addedon = DateTime.Now,
                 name=name,
+                date=date,  
+                type=type,
                 file = fileName // Save the uploaded document's file name
                
             };

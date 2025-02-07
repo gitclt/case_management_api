@@ -1,4 +1,5 @@
 ﻿using api_case_management.Data;
+using case_management_api.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -213,27 +214,76 @@ namespace case_management_api.Controllers
         [HttpGet]
 
         [Route("Profile")]
+        //public async Task<IActionResult> Profile(string encKey)
+        //{
+        //    if (string.IsNullOrEmpty(encKey))
+        //    {
+        //        return BadRequest(new { status = false, message = "Token is missing." });
+        //    }
+
+        //    var baseUrl = $"{Request.Scheme}://{Request.Host}/";
+
+        //    // Query to fetch employee profile along with department details
+        //    var details = await (
+        //        from a in _context.tbl_case_login
+        //        join ca in _context.tbl_case_account on a.account_id equals ca.id
+        //        where a.enc_key == encKey
+        //        select new
+        //        {
+        //            a.id,
+        //            a.username,
+        //            a.account_id,
+        //            a.name,
+        //            a.mobile,
+        //            account = ca.name,
+        //            ca.email,
+        //            ca.description
+        //        })
+        //        .ToListAsync();
+
+        //    // Check if employee exists
+        //    if (details == null || !details.Any())  // Check for an empty list
+        //    {
+        //        return NotFound(new { status = false, message = "No profile found for the provided token." });
+        //    }
+
+        //    // Return employee profile data if found (assuming we return the first profile if there are multiple results)
+        //    var employee = details.FirstOrDefault();
+
+        //    return Ok(new
+        //    {
+        //        status = true,
+        //        message = "Success.",
+        //        data = details 
+        //    });
+        //}
+
         public async Task<IActionResult> Profile(string encKey)
         {
             if (string.IsNullOrEmpty(encKey))
             {
                 return BadRequest(new { status = false, message = "Token is missing." });
             }
+
             var baseUrl = $"{Request.Scheme}://{Request.Host}/";
 
             // Query to fetch employee profile along with department details
-            var employee = await (from e in _context.tbl_case_login
-
-                                  where e.enc_key == encKey
-                                  select new
-                                  {
-                                      e.username,
-                                      e.account_id,
-                                      e.name,
-                                      e.mobile
-
-                                  })
-                                  .FirstOrDefaultAsync();
+            var employee = await (
+                from a in _context.tbl_case_login
+                join ca in _context.tbl_case_account on a.account_id equals ca.id
+                where a.enc_key == encKey
+                select new
+                {
+                    a.id,
+                    a.username,
+                    a.account_id,
+                    a.name,
+                    a.mobile,
+                    account = ca.name,
+                    ca.email,
+                    ca.description
+                })
+                .FirstOrDefaultAsync(); 
 
             // Check if employee exists
             if (employee == null)
@@ -246,17 +296,39 @@ namespace case_management_api.Controllers
             {
                 status = true,
                 message = "Success.",
-                data = new
-                {
-                    employee.username,
-                    employee.account_id,
-                  employee.name,
-                  employee.mobile
-
-
-                }
+                data = employee // No list, only a single object
             });
         }
+
+
+        [HttpPut]
+        [Route("update_fcm")]
+        public async Task<IActionResult> update_fcm([FromForm] int? id, [FromForm] string? fcm)
+        {
+            if (id == null)
+            {
+                return BadRequest(new { status = false, message = "ID is required" });
+            }
+
+            var order = await _context.tbl_case_login.FindAsync(id);
+
+            if (order == null)
+            {
+                return NotFound(new { status = false, message = "Record not found" });
+            }
+
+            // Update FCM token if provided
+            if (!string.IsNullOrEmpty(fcm))
+            {
+                order.fcm = fcm;
+            }
+
+            _context.tbl_case_login.Update(order);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { status = true, message = "Data updated successfully" });
+        }
+
 
 
 
