@@ -150,5 +150,39 @@ namespace case_management_api.Controllers
         }
 
 
+        [HttpGet]
+        [Route("view_documents")]
+
+        public async Task<IActionResult> view_documents(int? case_id, int? account_id)
+        {
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/";
+
+            if (_context.tbl_case_documents == null)
+            {
+                return Problem("Entity set '_context.tbl_case_documents' is null.");
+            }
+
+            var documents = (
+                from cd in _context.tbl_case_documents
+                join c in _context.tbl_case_cases on cd.case_id equals c.id
+                where (!case_id.HasValue || cd.case_id == case_id && !account_id.HasValue || c.account_id == account_id) // Filter by case_id if provided
+                select new
+                {
+                    cd.id,
+                    document_path = !string.IsNullOrEmpty(cd.document)
+                        ? $"{baseUrl}uploads/{c.type}/{c.id}/{cd.document}"
+                        : null
+                }
+            ).ToList(); // Convert to list
+
+            return Ok(new
+            {
+                status = true,
+                Message = "Success.",
+                data = documents // Corrected variable name
+            });
+        }
+
+
     }
 }

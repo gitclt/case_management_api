@@ -29,14 +29,14 @@ namespace case_management_api.Controllers
                 return Problem("Entity set '_context.tbl_case_cases'  is null.");
             }
             //validation based on field length in db
-            if (request.name.Length > 100)
-            {
-                return BadRequest(new { status = false, message = "Name cannot exceed 100 characters." });
-            }
-            if (request.address.Length > 50)
-            {
-                return BadRequest(new { status = false, message = "address cannot exceed 50 characters." });
-            }
+            //if (request.name.Length > 100)
+            //{
+            //    return BadRequest(new { status = false, message = "Name cannot exceed 100 characters." });
+            //}
+            //if (request.address.Length > 50)
+            //{
+            //    return BadRequest(new { status = false, message = "address cannot exceed 50 characters." });
+            //}
             //
             var division = new case_cases
             {
@@ -88,83 +88,7 @@ namespace case_management_api.Controllers
 
         [HttpPut]
         [Route("Updatecases")]
-        //public async Task<ActionResult> Updatecases(case_cases request)
-        //{
-        //    if (_context.tbl_case_cases == null)
-        //    {
-        //        return Problem("Entity set '_context.tbl_case_cases' is null.");
-        //    }
-
-        //    if (request.id.HasValue)
-        //    {
-        //        return BadRequest(new { status = false, message = "ID is required" });
-        //    }
-
-        //    var case_id = request.id.Value;
-
-        //    var existingEmployee = await _context.tbl_case_cases.FindAsync(case_id);
-        //    if (existingEmployee == null)
-        //    {
-        //        return NotFound(new { status = false, message = "cases not found" });
-        //    }
-        //    if (!string.IsNullOrEmpty(request.type))
-        //    {
-        //        existingEmployee.type = request.type;
-        //    }
-        //    if (!string.IsNullOrEmpty(request.name))
-        //    {
-        //        existingEmployee.name = request.name;
-        //    }
-        //    if (!string.IsNullOrEmpty(request.address))
-        //    {
-        //        existingEmployee.address = request.address;
-        //    }
-        //    if (!string.IsNullOrEmpty(request.email))
-        //    {
-        //        existingEmployee.email = request.email;
-        //    }
-        //    if (!string.IsNullOrEmpty(request.mobile))
-        //    {
-        //        existingEmployee.mobile = request.mobile;
-        //    }
-        //    if (!string.IsNullOrEmpty(request.location))
-        //    {
-        //        existingEmployee.location = request.location;
-        //    }
-        //    if (request.category_id.HasValue)
-        //    {
-        //        existingEmployee.category_id = request.category_id;
-        //    }
-        //    if (request.priority_id.HasValue)
-        //    {
-        //        existingEmployee.priority_id = request.priority_id.Value;
-        //    }
-
-        //    if (request.assembly_id.HasValue)
-        //    {
-        //        existingEmployee.assembly_id = request.assembly_id.Value;
-        //    }
-        //    if (!string.IsNullOrEmpty(request.title))
-        //    {
-        //        existingEmployee.title = request.title;
-        //    }
-        //    if (!string.IsNullOrEmpty(request.comment))
-        //    {
-        //        existingEmployee.comment = request.comment;
-        //    }
-        //    if (request.date.HasValue)
-        //    {
-        //        existingEmployee.date = request.date;
-        //    }
-        //    if (!string.IsNullOrEmpty(request.description))
-        //    {
-        //        existingEmployee.description = request.description;
-        //    }
-        //    // Save changes to the database
-        //    await _context.SaveChangesAsync();
-
-        //    return Ok(new { status = true, message = "Data updated successfully" });
-        //}
+       
         public async Task<ActionResult> Updatecases(case_cases request)
         {
             if (_context.tbl_case_cases == null)
@@ -241,99 +165,83 @@ namespace case_management_api.Controllers
 
         [HttpGet]
         [Route("view_cases")]
-        public async Task<IActionResult> view_cases(int? id, int? category_id, int? priority_id, int? account_id, string? keyword,string? status, string? type, DateTime? fromdate, DateTime? todate, string? month,string? timeRange, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> view_cases(int? id, int? category_id, int? priority_id, int? account_id, string? keyword, string? status, string? type, DateTime? fromdate, DateTime? todate, string? month, string? timeRange, int page = 1, int pageSize = 10)
         {
-           // return Ok(timeRange);
             if (_context.tbl_case_cases == null)
             {
                 return Problem("Entity set '_context.tbl_case_cases' is null.");
             }
 
             // Base query for cases with delete_status = 0
-            var empqry = _context.tbl_case_cases
-                                 .Where(e => e.delete_status == 0);
+            var empqry = _context.tbl_case_cases.Where(e => e.delete_status == 0);
 
             if (id.HasValue)
-            {
                 empqry = empqry.Where(e => e.id == id.Value);
-            }
+
             if (category_id.HasValue && category_id > 0)
-            {
                 empqry = empqry.Where(e => e.category_id == category_id.Value);
-            }
+
             if (priority_id.HasValue && priority_id > 0)
-            {
                 empqry = empqry.Where(e => e.priority_id == priority_id.Value);
-            }
-            //if (assembly_id.HasValue && assembly_id > 0)
-            //{
-            //    empqry = empqry.Where(e => e.assembly_id == assembly_id.Value);
-            //}
+
             if (account_id.HasValue && account_id > 0)
-            {
                 empqry = empqry.Where(e => e.account_id == account_id.Value);
-            }
+
             if (!string.IsNullOrWhiteSpace(status))
-            {
                 empqry = empqry.Where(e => e.status == status);
-            }
+
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 empqry = empqry.Where(e =>
                     e.name.Contains(keyword) ||
                     e.address.Contains(keyword) ||
-                     e.title.Contains(keyword) ||
-
+                    e.title.Contains(keyword) ||
                     e.location.Contains(keyword));
             }
 
-            if (fromdate != null && todate != null)
+            if (fromdate.HasValue && todate.HasValue)
             {
-                empqry = empqry.Where(c =>
-                    (fromdate == null || c.date >= fromdate) &&
-                    (todate == null || c.date <= todate));
+                empqry = empqry.Where(c => c.date >= fromdate && c.date <= todate);
             }
 
-            //for all activity list
-            if (month != null)
+            if (!string.IsNullOrEmpty(month))
             {
-                empqry = empqry.Where(c => c.date.HasValue && c.date.Value.Month == int.Parse(month));
-
+                if (int.TryParse(month, out int monthValue))
+                {
+                    empqry = empqry.Where(c => c.date.HasValue && c.date.Value.Month == monthValue);
+                }
             }
 
-            //current day,week and month for app
-            // Apply timeRange filter for current day, week, or month
+            // Apply timeRange filter
+            DateTime today = DateTime.Today;
             if (!string.IsNullOrEmpty(timeRange))
             {
-
-                DateTime today = DateTime.Today;
-                // return Ok(today);
-
                 if (timeRange.Equals("day", StringComparison.OrdinalIgnoreCase))
                 {
                     empqry = empqry.Where(c => c.date == today);
-
                 }
+                //else if (timeRange.Equals("week", StringComparison.OrdinalIgnoreCase))
+                //{
+                //    var startOfWeek = today.AddDays(-(int)today.DayOfWeek);
+                //    var endOfWeek = startOfWeek.AddDays(7).AddSeconds(-1);
+                //    empqry = empqry.Where(c => c.date >= startOfWeek && c.date <= endOfWeek);
+                //}
 
-                else if (timeRange.Equals("week", StringComparison.OrdinalIgnoreCase))
+                if (timeRange.Equals("week", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Start and end of the current week
-                    var startOfWeek = today.AddDays(-(int)today.DayOfWeek);
-                    var endOfWeek = startOfWeek.AddDays(7).AddSeconds(-1);
+                    var startOfWeek = today.Date; // Today, without time
+                    var endOfWeek = startOfWeek.AddDays(7).AddSeconds(-1); // End of the 7th day
                     empqry = empqry.Where(c => c.date >= startOfWeek && c.date <= endOfWeek);
                 }
+
                 else if (timeRange.Equals("month", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Start and end of the current month
                     var startOfMonth = new DateTime(today.Year, today.Month, 1);
                     var endOfMonth = startOfMonth.AddMonths(1).AddSeconds(-1);
-
                     empqry = empqry.Where(c => c.date >= startOfMonth && c.date <= endOfMonth);
                 }
             }
-            //
 
-           
             if (!string.IsNullOrWhiteSpace(type))
             {
                 empqry = empqry.Where(e => e.type == type);
@@ -350,7 +258,7 @@ namespace case_management_api.Controllers
                         join st in _context.tbl_case_status on c.id equals st.case_id into sts
                         from sta in sts.DefaultIfEmpty()
                         where (sc == null || sc.delete_status == 0) && pr.delete_status == 0
-                        group new { c, sc, pr, a, sta } by c.id into grouped // Group by c.id to remove duplicates
+                        group new { c, sc, pr, a, sta } by c.id into grouped
                         select new
                         {
                             id = grouped.Key,
@@ -359,8 +267,11 @@ namespace case_management_api.Controllers
                             email = grouped.First().c.email,
                             mobile = grouped.First().c.mobile,
                             location = grouped.First().c.location,
+                            addedby = grouped.First().c.addedby,
+                            account_id = grouped.First().c.account_id,
+
                             category_id = grouped.First().c.category_id,
-                            category = grouped.First().sc.name, // Handle nulls from left join
+                            category = grouped.First().sc.name,
                             priority_id = grouped.First().c.priority_id,
                             assembly_id = grouped.First().c.assembly_id,
                             assembly = grouped.First().a.name,
@@ -373,7 +284,6 @@ namespace case_management_api.Controllers
                             subject = grouped.First().c.subject,
                             status = grouped.First().c.status,
                             comment = grouped.First().c.comment,
-
                             type = grouped.First().c.type,
                             contact_person = (from ca in _context.tbl_case_contactperson
                                               where ca.case_id == grouped.Key
@@ -394,92 +304,35 @@ namespace case_management_api.Controllers
             var totalCount = await query.CountAsync();
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
-            var resultList = await query
-                                  .Skip((page - 1) * pageSize)
-                                  .Take(pageSize)
-                                  .ToListAsync();
+            var resultList = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
-
-            // Filter and format response based on the `type` parameter
-            object dataResponse;
-
-            if (type == "support request")
+            // Format response data
+            var dataResponse = resultList.Select(result => new
             {
-                dataResponse = resultList.Select(result => new
-                {
-                    result.id,
-                    result.type,
-                    result.name,
-                    result.email,
-                    result.mobile,
-                    result.title,
-                    result.description,
-                    result.date,
-                    result.priority_id,
-                    result.priority,
-                    result.comment,
-                    //app 
-                    result.assembly_id,
-                    result.assembly,
-                    result.category_id,
-                    result.category,
-                   // result.activity,
-                    result.status,
-                    result.subject,
-
-                }).ToList();
-            }
-            else if (type == "program schedule")
-            {
-                dataResponse = resultList.Select(result => new
-                {
-                    result.id,
-                    //  result.name,
-                    result.type,
-                    result.location,
-                    result.title,
-                    result.description,
-                  //  result.mobile,
-                    result.date,
-                    result.time,
-                    result.assembly_id,
-                    result.assembly,    
-                    result.priority_id,
-                    result.priority,
-                    result.category_id,
-                    result.category,
-                    result.status,
-                   // result.activity,
-
-                    result.contact_person
-
-                }).ToList();
-            }
-            else
-            {
-                // Default response for unknown or unspecified types
-                dataResponse = resultList.Select(result => new
-                {
-                    result.id,
-                    result.type,
-                    result.location,
-                    result.priority_id,
-                    result.priority,
-                    result.assembly_id,
-                    result.assembly,
-                    result.category_id,
-                    result.category,
-                    result.date,
-                    result.time,
-                    result.title,
-                    result.description,
-                  //  result.activity,
-
-                    result.status,
-                    result.contact_person
-
-                }).ToList();
-            }
+                result.id,
+                result.type,
+                result.name,
+                result.address,
+                result.email,
+                result.mobile,
+                result.location,
+                result.priority_id,
+                result.priority,
+                result.assembly_id,
+                result.assembly,
+                result.category_id,
+                result.category,
+                result.date,
+                result.time,
+                result.title,
+                result.comment,
+                result.description,
+                result.addedby,
+                result.account_id,
+                result.status,
+                result.subject,
+                result.contact_person
+            }).ToList();
 
             return Ok(new
             {
@@ -490,6 +343,7 @@ namespace case_management_api.Controllers
                 data = dataResponse
             });
         }
+
 
 
 
@@ -642,97 +496,15 @@ namespace case_management_api.Controllers
 
 
             // Filter and format response based on the `type` parameter
-            object dataResponse;
+            var caseList = await query.ToListAsync();
 
-            if (type == "support request")
-            {
-                dataResponse = query.Select(result => new
-                {
-                    result.id,
-                    result.type,
-                    result.name,
-                    result.email,
-                    result.mobile,
-                    result.title,
-                    result.description,
-                    result.category_id,
-                    result.category,
-                    result.date,
-                    result.priority_id,
-                    result.priority,
-                    result.assembly_id,
-                    result.assembly,
-                    result.subject,
-                    result.status,
-                    result.comment,
-                    result.case_documents,
-                    result.contact_person,
-                    result.case_status
-
-                }).ToList();
-            }
-            else if (type == "program schedule")
-            {
-                dataResponse = query.Select(result => new
-                {
-                    result.id,
-                    result.type,    
-                    result.location,
-                    result.title,
-                    result.name,
-                    result.description,
-                    result.mobile,
-                    result.date,
-                    result.time,
-                    result.priority_id,
-                    result.priority,
-                    result.assembly_id,
-                    result.assembly,    
-                    result.category_id,
-                    result.category,
-                    result.status,
-                    result.comment,
-                    result.subject,
-                    result.case_documents,
-                    result.contact_person,
-                    result.case_status
-
-
-                }).ToList();
-            }
-            else 
-            {
-                // Default response for unknown or unspecified types
-                dataResponse = query.Select(result => new
-                {
-                    result.id,
-                    result.type,
-                    result.location,
-                    result.category_id,
-                    result.category,
-                    result.priority_id,
-                    result.priority,
-                    result.assembly_id,
-                    result.assembly,
-                    result.date,
-                    result.title,
-                    result.description,
-                    result.status,
-
-                    result.case_documents,
-                    result.contact_person,
-                    result.case_status
-
-
-                }).ToList();
-            }
 
             return Ok(new
             {
                 status = true,
                 message = "Success.",
 
-                data = dataResponse
+                data = caseList
             });
         }
 

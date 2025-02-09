@@ -62,7 +62,7 @@ namespace case_management_api.Controllers
                                   tbl.date == curdate &&
                                   tbl.reminder_date == curdate &&
                                   tbl.account_id == account_id.Value);
-
+              //  return Ok(program_schedule);    
                 // ✅ If all counts are 0, return 'No Data Found'
                 if (supportrequest == 0 && supportrequest_reminders == 0 && program_schedule == 0 && programschedule_reminders == 0)
                 {
@@ -163,21 +163,38 @@ namespace case_management_api.Controllers
 
             if (type == "app")
             {
+                //var reminders = _context.tbl_case_cases
+                //    .Where(tbl => tbl.delete_status == 0 &&
+                //                  tbl.date > curdate &&
+                //                  tbl.date <= startOfWeek &&
+                //                  tbl.account_id == account_id &&
+                //                  tbl.type != "program schedule" &&
+                //                  tbl.type != "support request")
+                //    .GroupBy(tbl => tbl.type)
+                //    .Select(g => new
+                //    {
+                //        Label = g.Key + " Reminder", // Format label dynamically
+                //        Value = g.Key.Replace(" ", "_").ToLower() + "_reminder", // Convert type to snake_case
+                //        Count = g.Count().ToString() // Convert count to string
+                //    })
+                //    .ToList();
+
                 var reminders = _context.tbl_case_cases
-                    .Where(tbl => tbl.delete_status == 0 &&
-                                  tbl.date > curdate &&
-                                  tbl.date <= startOfWeek &&
-                                  tbl.account_id == account_id &&
-                                  tbl.type != "program schedule" &&
-                                  tbl.type != "support request")
-                    .GroupBy(tbl => tbl.type)
-                    .Select(g => new
-                    {
-                        Label = g.Key + " Reminder", // Format label dynamically
-                        Value = g.Key.Replace(" ", "_").ToLower() + "_reminder", // Convert type to snake_case
-                        Count = g.Count().ToString() // Convert count to string
-                    })
-                    .ToList();
+     .Where(tbl => tbl.delete_status == 0 &&
+                   tbl.date >= curdate && // Ensure it includes today
+                   tbl.date <= startOfWeek &&
+                   tbl.account_id == account_id &&
+                   tbl.type != "program schedule" &&
+                   tbl.type != "support request")
+     .GroupBy(tbl => tbl.type)
+     .Select(g => new
+     {
+         Label = g.Key + " Reminder",
+         Value = g.Key.Replace(" ", "_").ToLower() + "_reminder",
+         Count = g.Count().ToString() // Ensure count is calculated correctly
+     })
+     .ToList();
+
 
                 // If no reminders found, return 'No data found!'
                 if (!reminders.Any())
@@ -197,40 +214,38 @@ namespace case_management_api.Controllers
             }
 
             // Web type logic
-            else if (type == "web")
+            if (type == "web")
             {
-                var supportrequest_reminders = _context.tbl_case_cases.Count(tbl =>
-                    tbl.type == "support request" && tbl.delete_status == 0 && tbl.reminder_date > curdate && tbl.reminder_date <= startOfWeek);
+                var reminders = _context.tbl_case_cases
+    .Where(tbl => tbl.delete_status == 0 &&
+                  tbl.date >= curdate && // Ensure it includes today
+                  tbl.date <= startOfWeek &&
+                  tbl.account_id == account_id &&
+                  tbl.type != "program schedule" &&
+                  tbl.type != "support request")
+    .GroupBy(tbl => tbl.type)
+    .Select(g => new
+    {
+        Label = g.Key + " Reminder",
+        Value = g.Key.Replace(" ", "_").ToLower() + "_reminder",
+        Count = g.Count().ToString() // Ensure count is calculated correctly
+    })
+    .ToList();
 
-                var wedding_reminders = _context.tbl_case_cases.Count(tbl =>
-                    tbl.type == "wedding" && tbl.delete_status == 0 && tbl.reminder_date > curdate && tbl.reminder_date <= startOfWeek);
-
-                var birthday = _context.tbl_case_cases.Count(tbl =>
-                    tbl.type == "birthday" && tbl.delete_status == 0 && tbl.reminder_date > curdate && tbl.reminder_date <= startOfWeek);
-
-                var meeting = _context.tbl_case_cases.Count(tbl =>
-                    tbl.type == "meeting" && tbl.delete_status == 0 && tbl.reminder_date > curdate && tbl.reminder_date <= startOfWeek);
-
-                var inauguration = _context.tbl_case_cases.Count(tbl =>
-                    tbl.type == "inauguration" && tbl.delete_status == 0 && tbl.reminder_date > curdate && tbl.reminder_date <= startOfWeek);
+                // If no reminders found, return 'No data found!'
+                if (!reminders.Any())
+                {
+                    return Ok(new
+                    {
+                        status = false,
+                        message = "No data found!"
+                    });
+                }
 
                 return Ok(new
                 {
                     status = true,
-                    data = new
-                    {
-                        supportReminders = supportrequest_reminders,
-                        reminders = new List<object>
-                {
-                    new
-                    {
-                        wedding_reminder = wedding_reminders,
-                        birthday_reminder = birthday,
-                        meeting,
-                        inauguration
-                    }
-                }
-                    }
+                    reminders
                 });
             }
 
