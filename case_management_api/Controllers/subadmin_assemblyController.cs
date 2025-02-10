@@ -68,5 +68,37 @@ namespace case_management_api.Controllers
             return Ok(new { status = true, message = "Data deleted successfully" });
         }
 
+
+        [HttpPut]
+        [Route("update_subadminassembly")]
+        public async Task<ActionResult> update_subadminassembly([FromBody] List<case_subadmin_assembly> requests)
+        {
+            if (requests == null || requests.Count == 0)
+            {
+                return Ok(new { status = false, message = "No data provided for update" });
+            }
+
+            // Extract distinct subadmin_id values from the request list
+            var subadminIds = requests.Select(r => r.subadmin_id).Distinct().ToList();
+
+            // Fetch all records that match any of the provided subadmin_id values
+            var existingRecords = _context.tbl_case_subadminassembly
+                                          .Where(x => subadminIds.Contains(x.subadmin_id))
+                                          .ToList();
+
+            if (existingRecords.Count > 0)
+            {
+                // Delete all existing records that match the subadmin_id
+                _context.tbl_case_subadminassembly.RemoveRange(existingRecords);
+                await _context.SaveChangesAsync();
+            }
+
+            // Insert new records from the request
+            _context.tbl_case_subadminassembly.AddRange(requests);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { status = true, message = "Data updated successfully" });
+        }
+
     }
 }

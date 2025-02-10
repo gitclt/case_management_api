@@ -149,13 +149,51 @@ namespace case_management_api.Controllers
             return Ok(new { status = true, message = "Document deleted successfully" });
         }
 
+        //public async Task<ActionResult> case_document_delete([FromForm] int id)
+        //{
+        //    // Find the document in the database
+        //    var document = await _context.tbl_case_documents.FindAsync(id);
 
-        [HttpGet]
+        //    if (document == null)
+        //    {
+        //        return NotFound(new { status = false, message = "Document not found" });
+        //    }
+
+        //    // Construct the physical file path
+        //    string uploadsFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", document.type, document.case_id.ToString());
+        //    string documentPath = Path.Combine(uploadsFolderPath, document.document);
+
+        //    // Delete the file from the server
+        //    if (System.IO.File.Exists(documentPath))
+        //    {
+        //        System.IO.File.Delete(documentPath);
+        //    }
+
+        //    // Remove the document entry from the database
+        //    _context.tbl_case_documents.Remove(document);
+        //    await _context.SaveChangesAsync();
+
+        //    return Ok(new { status = true, message = "Document deleted successfully" });
+        //}
+
+
+
+        [HttpPost]
         [Route("view_documents")]
 
         public async Task<IActionResult> view_documents(int? case_id, int? account_id)
         {
             var baseUrl = $"{Request.Scheme}://{Request.Host}/";
+
+            // Validate required parameters
+            if (!case_id.HasValue && !account_id.HasValue)
+            {
+                return Ok(new
+                {
+                    status = false,
+                    Message = "case_id and account_id are required"
+                });
+            }
 
             if (_context.tbl_case_documents == null)
             {
@@ -165,7 +203,9 @@ namespace case_management_api.Controllers
             var documents = (
                 from cd in _context.tbl_case_documents
                 join c in _context.tbl_case_cases on cd.case_id equals c.id
-                where (!case_id.HasValue || cd.case_id == case_id && !account_id.HasValue || c.account_id == account_id) // Filter by case_id if provided
+                where
+                    (case_id.HasValue && cd.case_id == case_id) &&
+                    (account_id.HasValue && c.account_id == account_id) // Ensure both are applied correctly
                 select new
                 {
                     cd.id,
@@ -173,13 +213,23 @@ namespace case_management_api.Controllers
                         ? $"{baseUrl}uploads/{c.type}/{c.id}/{cd.document}"
                         : null
                 }
-            ).ToList(); // Convert to list
+            ).ToList();
+
+            // Check if data is empty
+            if (documents.Count == 0)
+            {
+                return Ok(new
+                {
+                    status = false,
+                    Message = "No data found."
+                });
+            }
 
             return Ok(new
             {
                 status = true,
                 Message = "Success.",
-                data = documents // Corrected variable name
+                data = documents
             });
         }
 

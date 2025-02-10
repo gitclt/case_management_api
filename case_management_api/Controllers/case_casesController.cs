@@ -163,7 +163,7 @@ namespace case_management_api.Controllers
             return Ok(new { status = true, message = "Data deleted successfully" });
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("view_cases")]
         public async Task<IActionResult> view_cases(int? id, int? category_id, int? priority_id, int? account_id, string? keyword, string? status, string? type, DateTime? fromdate, DateTime? todate, string? month, string? timeRange, int page = 1, int pageSize = 10)
         {
@@ -347,7 +347,7 @@ namespace case_management_api.Controllers
 
 
 
-        [HttpGet]
+        [HttpPost]
         [Route("cases_detail")]
         public async Task<IActionResult> cases_detail(int? id, string? type, int? account_id,string? timeRange)
         {
